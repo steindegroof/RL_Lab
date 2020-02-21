@@ -61,34 +61,45 @@ class Gaussian_Bandit_NonStat(Gaussian_Bandit):
     # TODO: implement this class following the formalism above.
     # Reminder: the distribution mean changes each step over time,
     # with increments following N(m=0,std=0.01)
-    def __init__(self, **kwargs):
-        Gaussian_Bandit.__init__(self,**kwargs)
-        self.firstMu = self.mu
-
-    def reset(self):
-        self.mu = self.firstMu
-
     def pull(self):
         self.mu += np.random.normal(0,0.01)
         return Gaussian_Bandit.pull(self)
    
 
-class KBandit:
-    # TODO: implement this class following the formalism above.
-    # Reminder: The k-armed Bandit is a set of k Bandits.
-    # In this case we mean for it to be a set of Gaussian_Bandits.
-    def __init__(self, **kwargs):
-        self.mu = kwargs["mu"]
-        self.sigma = kwargs["sigma"]
-        self.bandits = []
-        for i in kwargs["k"]:
-            self.bandits.append(Gaussian_Bandit(self.mu,self.sigma))
+class KBandit(Bandit):
+    """ Set of k Gaussian_Bandits. """
+    def __init__(self, k, **kwargs):
+        """
+        Instantiates the k-armed bandit, with a number of arms, and initializes
+        the set of bandits to new gaussian bandits in a bandits list.
+        The reset() method is supposedly called from outside.
+        Parameters
+        ----------
+        k: positive int
+            Number of arms of the problem.
+        """
+        self.k = k
+        self.bandits = [Gaussian_Bandit() for _ in range(self.k)]
 
-    def __iter__(self):
-        return iter(self.bandits)
+    def reset(self):
+        """ Resets each of the k bandits. """
+        for bandit in self.bandits:
+            bandit.reset()
+        self.best_action = np.argmax([bandit.mean for bandit in self.bandits]) # printing purposes
 
-    def()
-   
+    def pull(self, action:int) -> float:
+        """
+        Pulls the lever from Bandit #action. Returns the reward.
+        Parameters
+        ----------
+        action: positive int < k
+            Lever to pull.
+        Returns
+        -------
+        reward : float
+            Reward for pulling this lever.
+        """
+        return self.bandits[action].pull()
 
 
 class KBandit_NonStat:
