@@ -78,22 +78,46 @@ class Random_Agent(Bandit_Agent):
         return np.random.randint(self.k)
 
 
-class EpsGreedy_SampleAverage:
+class EpsGreedy_SampleAverage(Bandit_Agent):
     # TODO: implement this class following the formalism above.
     # This class uses Sample Averages to estimate q; others are non stationary.
-    pass
+    def __init__(self, k:int, **kwargs):
+        Bandit_Agent.__init__(self)
+        self.Q = [0 for i in range(self.k)]
+        self.counters = [0 for i in range(self.k)]
 
+    def act(self):
+        return index(max(self.Q))
+        max_q = max(self.Q)
+        max_inds = [i for i, x in enumerate(self.Q) if x == max_q]
+        return np.random.choice(max_inds)
+
+    def learn(self, a:int, r:float):
+        # update Q_a and its associated counter
+        Q_a = self.Q[a]
+        n = self.counters[a]
+        total_a = Q_a * n + r
+        self.counters[a] += 1
+        Q_a = total_a / (n+1)
+
+        
 
 class EpsGreedy:
     # TODO: implement this class following the formalism above.
     # Non stationary agent with q estimating and eps-greedy action selection.
-    pass
+    def __init__(self, k:int, **kwargs):
+
+    def act(self):
+    def learn(self, a:int, r:float):
 
 
 class OptimisticGreedy:
     # TODO: implement this class following the formalism above.
     # Same as above but with optimistic starting values.
-    pass
+    def __init__(self, k:int, **kwargs):
+
+    def act(self):
+    def learn(self, a:int, r:float):
 
 
 class UCB:

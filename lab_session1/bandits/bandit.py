@@ -37,22 +37,58 @@ class Bandit(object):
         raise NotImplementedError("Calling method pull() in Abstract class Bandit")
 
 
-class Gaussian_Bandit:
+class Gaussian_Bandit(Bandit):
     # TODO: implement this class following the formalism above.
     # Reminder: the Gaussian_Bandit's distribution is a fixed Gaussian.
-    pass
+    def __init__(self, **kwargs):
+        Bandit.__init__(self)
+        self.mu = kwargs["mu"]
+        self.sigma = kwargs["sigma"]
 
-class Gaussian_Bandit_NonStat:
+    def reset(self):
+        self.mu = np.random.normal(0,1)
+
+    def setMu(self, mu):
+        self.mu = mu
+
+    def setSigma(self, sigma):
+        self.sigma = sigma
+
+    def pull(self):
+        return np.random.normal(self.mu,self.sigma)
+
+class Gaussian_Bandit_NonStat(Gaussian_Bandit):
     # TODO: implement this class following the formalism above.
     # Reminder: the distribution mean changes each step over time,
     # with increments following N(m=0,std=0.01)
-    pass
+    def __init__(self, **kwargs):
+        Gaussian_Bandit.__init__(self,**kwargs)
+        self.firstMu = self.mu
+
+    def reset(self):
+        self.mu = self.firstMu
+
+    def pull(self):
+        self.mu += np.random.normal(0,0.01)
+        return Gaussian_Bandit.pull(self)
+   
 
 class KBandit:
     # TODO: implement this class following the formalism above.
     # Reminder: The k-armed Bandit is a set of k Bandits.
     # In this case we mean for it to be a set of Gaussian_Bandits.
-    pass
+    def __init__(self, **kwargs):
+        self.mu = kwargs["mu"]
+        self.sigma = kwargs["sigma"]
+        self.bandits = []
+        for i in kwargs["k"]:
+            self.bandits.append(Gaussian_Bandit(self.mu,self.sigma))
+
+    def __iter__(self):
+        return iter(self.bandits)
+
+    def()
+   
 
 
 class KBandit_NonStat:

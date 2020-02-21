@@ -35,6 +35,14 @@ def run_bandit(agent, kbandit, max_steps) -> (np.array, np.array):
                 of ones and zeros rather than actual booleans.
     """
     # TODO: implement this function.
+    perf = np.empty(max_steps)
+    best_action = np.empty(max_steps)
+    agent.reset()
+    kbandit.reset()
+    for step in range(max_steps):
+        action = agent.act()
+        perf[step] = kbandit.pull(action)
+            
     return perf, best_action
 
 def run_multiple_bandits(n_runs, **kwargs) -> (np.array, np.array):
