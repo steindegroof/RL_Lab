@@ -41,8 +41,10 @@ def run_bandit(agent, kbandit, max_steps) -> (np.array, np.array):
     kbandit.reset()
     for step in range(max_steps):
         action = agent.act()
-        perf[step] = kbandit.pull(action)
-            
+        result = kbandit.pull(action)
+        agent.learn(action,result)
+        perf[step] = result
+        best_action[step] = action == kbandit.best_action
     return perf, best_action
 
 def run_multiple_bandits(n_runs, **kwargs) -> (np.array, np.array):
@@ -152,11 +154,11 @@ launch_type = 'multiple_agents'
 if launch_type == 'multiple_agents':
     agents = [
         Random_Agent(**config),
-        EpsGreedy(**config),
+        #EpsGreedy(**config)
         EpsGreedy_SampleAverage(**config),
-        OptimisticGreedy(**config),
-        Gradient_Bandit(**config),
-        UCB(**config)
+        #OptimisticGreedy(**config),
+        #Gradient_Bandit(**config),
+        #UCB(**config)
     ]
     perfs, best_actions = run_multiple_agents(agents, kbandit=kbandit, n_runs=n_runs, max_steps=max_steps)
     # You can change the labels, title and file_name
@@ -168,7 +170,7 @@ elif launch_type == 'spectrum':
     agent = UCB(**config)
     spectrum =  ['c', [0.25,0.5,1,2]]
     # finally, running:
-    perfs, best_actions = run_spectrum(spectrum, agent=agent, kbandit=kbandit, n_runs=n_runs, max_steps=max_steps
+    perfs, best_actions = run_spectrum(spectrum, agent=agent, kbandit=kbandit, n_runs=n_runs, max_steps=max_steps)
     # You can change the labels, title and file_name
     labels = ['{}={}'.format(spectrum[0], value) for value in spectrum[1]]
     file_name = 'plots/{}_study'.format(spectrum[0])

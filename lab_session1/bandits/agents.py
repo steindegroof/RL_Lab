@@ -82,15 +82,19 @@ class EpsGreedy_SampleAverage(Bandit_Agent):
     # TODO: implement this class following the formalism above.
     # This class uses Sample Averages to estimate q; others are non stationary.
     def __init__(self, k:int, **kwargs):
-        Bandit_Agent.__init__(self)
+        Bandit_Agent.__init__(self,k)
         self.Q = [0 for i in range(self.k)]
         self.counters = [0 for i in range(self.k)]
+        self.eps = kwargs["eps"]
 
     def act(self):
-        return index(max(self.Q))
-        max_q = max(self.Q)
-        max_inds = [i for i, x in enumerate(self.Q) if x == max_q]
-        return np.random.choice(max_inds)
+        # First check if we pick at random:
+        if self.eps >= np.random.random():
+            return np.random.randint(0,self.k)
+        else:
+            max_q = max(self.Q)
+            max_inds = [i for i, x in enumerate(self.Q) if x == max_q]
+            return np.random.choice(max_inds)
 
     def learn(self, a:int, r:float):
         # update Q_a and its associated counter
@@ -98,27 +102,32 @@ class EpsGreedy_SampleAverage(Bandit_Agent):
         n = self.counters[a]
         total_a = Q_a * n + r
         self.counters[a] += 1
-        Q_a = total_a / (n+1)
+        self.Q[a] = total_a / (n+1)
 
+    def reset(self):
+        self.Q = [0 for i in range(self.k)]
+        self.counters = [0 for i in range(self.k)]
         
 
 class EpsGreedy:
     # TODO: implement this class following the formalism above.
     # Non stationary agent with q estimating and eps-greedy action selection.
     def __init__(self, k:int, **kwargs):
-
+        pass
     def act(self):
+        pass
     def learn(self, a:int, r:float):
-
+        pass
 
 class OptimisticGreedy:
     # TODO: implement this class following the formalism above.
     # Same as above but with optimistic starting values.
     def __init__(self, k:int, **kwargs):
-
+        pass
     def act(self):
+        pass
     def learn(self, a:int, r:float):
-
+        pass
 
 class UCB:
     # TODO: implement this class following the formalism above.

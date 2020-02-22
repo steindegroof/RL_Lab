@@ -42,8 +42,8 @@ class Gaussian_Bandit(Bandit):
     # Reminder: the Gaussian_Bandit's distribution is a fixed Gaussian.
     def __init__(self, **kwargs):
         Bandit.__init__(self)
-        self.mu = kwargs["mu"]
-        self.sigma = kwargs["sigma"]
+        self.mu = np.random.normal(0,1)
+        self.sigma = 1
 
     def reset(self):
         self.mu = np.random.normal(0,1)
@@ -85,7 +85,7 @@ class KBandit(Bandit):
         """ Resets each of the k bandits. """
         for bandit in self.bandits:
             bandit.reset()
-        self.best_action = np.argmax([bandit.mean for bandit in self.bandits]) # printing purposes
+        self.best_action = np.argmax([bandit.mu for bandit in self.bandits]) # printing purposes
 
     def pull(self, action:int) -> float:
         """
@@ -102,7 +102,10 @@ class KBandit(Bandit):
         return self.bandits[action].pull()
 
 
-class KBandit_NonStat:
+class KBandit_NonStat(KBandit):
     # TODO: implement this class following the formalism above.
     # Reminder: Same as KBandit, with non stationary Bandits.
-    pass
+     def __init__(self, k, **kwargs):
+        self.k = k
+        self.bandits = [Gaussian_Bandit_NonStat() for _ in range(self.k)]
+   
