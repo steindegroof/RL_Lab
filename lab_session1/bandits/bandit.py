@@ -48,12 +48,6 @@ class Gaussian_Bandit(Bandit):
     def reset(self):
         self.mu = np.random.normal(0,1)
 
-    def setMu(self, mu):
-        self.mu = mu
-
-    def setSigma(self, sigma):
-        self.sigma = sigma
-
     def pull(self):
         return np.random.normal(self.mu,self.sigma)
 
