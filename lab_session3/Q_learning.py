@@ -10,7 +10,7 @@ from gym.envs.registration import register
 # 4x4 environment
 kwargs = {'map_name': '4x4', 'is_slippery': False}
 # 8x8 environment
-# kwargs = {'map_name': '8x8', 'is_slippery': False}
+# kwargs = {'map_name': '8x8', 'is_slippery': True}
 register(
     id='FrozenLakeNotSlippery-v0',
     entry_point='gym.envs.toy_text:FrozenLakeEnv',
@@ -31,7 +31,7 @@ state_size = env.observation_space.n
 
 # TODO Declare your q-table based on number of states and actions.
 
-qtable = 
+qtable =
 
 
 class Agent(object):
@@ -58,17 +58,15 @@ class Agent(object):
         self.min_epsilon = 0.01            # Minimum exploration probability
         self.decay_rate = 0.001             # Exponential decay rate for exploration prob
 
-    def act(self, state, exp_exp_tradeoff):
+    def act(self, state):
         """
-        Function where agent acts.
+        Function where agent acts with policy eps-greedy.
+        Epsilon is updated outside this method.
 
         Parameters
         ----------
         state: numpy int64
             current state of the environment
-
-        exp_exp_tradeoff: float
-            exploration and exploitation tradeoff
 
         Returns
         -------
@@ -163,14 +161,14 @@ class Trainer(object):
                 exp_exp_tradeoff = random.uniform(0, 1)
 
                 # take an action
-                action = self.agent.act(state, exp_exp_tradeoff)
+                action = self.agent.act(state)
 
                 # get feedback from environment
                 new_state, reward, done, info = env.step(action)
 
                 # update your qtable
                 self.agent.learn(
-                    state, action, new_state, reward)
+                    state, action, reward, new_state)
 
                 # move your agent to new state
                 state = new_state
@@ -185,7 +183,7 @@ class Trainer(object):
             episode += 1
 
             # update your exploration rate
-            agent.update_epsilon(episode)
+            self.agent.update_epsilon(episode)
 
             # global reward
             rewards.append(self.total_rewards)
@@ -197,7 +195,7 @@ class Trainer(object):
         print(self.agent.qtable)
 
         # printing epsilon
-        print(self.epsilon)
+        print(self.agent.epsilon)
 
         return self.qtable
 
@@ -219,7 +217,8 @@ def test():
             new_state, reward, done, info = env.step(action)
             print(reward)
             if done:
-                print('\n \x1b[6;30;42m' + 'Success!' + '\x1b[0m')
+                if reward == 1:
+                    print('\n \x1b[6;30;42m' + 'Success!' + '\x1b[0m')
                 action = np.argmax(qtable[state, :])
                 print(action)
                 env.render()
@@ -238,8 +237,8 @@ if __name__ == '__main__':
     # reset environment and test
     env.reset()
     env.render()
-    if kwargs['map_name'] = '4x4':
+    if kwargs['map_name'] == '4x4':
         print(np.argmax(qtable, axis=1).reshape(4, 4))
-    elif kwargs['map_name'] = '8x8':
+    elif kwargs['map_name'] == '8x8':
         print(np.argmax(qtable, axis=1).reshape(8, 8))
     test()
